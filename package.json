@@ -7,9 +7,8 @@
   "author": "Ayanbisi AbdulRahman",
   "type": "commonjs",
   "scripts": {
-    "clean": "node scripts/clean-dist.js",
-    "start": "npm run clean && parcel index.html",
-    "build": "npm run clean && parcel build index.html --public-url ./ --no-source-maps && node scripts/fix-dist-icons.js"
+    "start": "parcel index.html",
+    "build": "parcel build index.html --public-url ./ --no-source-maps"
   },
   "devDependencies": {
     "@parcel/transformer-sass": "^2.16.4",
