@@ -1,0 +1,195 @@
+import { API_URL as API, API_URL, KEY, RES_PER_PAGE } from './config.js';
+import { AJAX } from './helpers';
+
+export const state = {
+  recipe: {},
+  search: {
+    query: '',
+    results: [],
+    page: 1,
+    resultsPerPage: RES_PER_PAGE,
+  },
+
+  bookmarks: [],
+};
+
+/**
+ * Normalizes the API recipe shape into the format used by the app state.
+ * @param {{recipe: Object}} data API response data containing a recipe object.
+ * @returns {Object} A recipe object shaped for the UI and state.
+ */
+const createRecipeObject = function (data) {
+  const { recipe } = data;
+
+  return {
+    id: recipe.id,
+    title: recipe.title,
+    publisher: recipe.publisher,
+    sourceUrl: recipe.source_url,
+    image: recipe.image_url,
+    servings: recipe.servings,
+    cookingTime: recipe.cooking_time,
+    ingredients: recipe.ingredients,
+    ...(recipe.key && { key: recipe.key }),
+  };
+};
+
+/**
+ * Loads a single recipe by id and stores it in application state.
+ * @param {string} id The recipe id from the URL hash.
+ * @returns {Promise<void>}
+ */
+export const loadRecipe = async function (id) {
+  try {
+    const { data } = await AJAX(`${API}${id}?key=${KEY}`);
+
+    state.recipe = createRecipeObject(data);
+
+    if (state.bookmarks.some(bookmark => bookmark.id === id))
+      state.recipe.bookmarked = true;
+    else state.recipe.bookmarked = false;
+  } catch (err) {
+    throw err;
+  }
+};
+
+/**
+ * Loads search results for a query and resets the current results page to page one.
+ * @param {string} query Search text entered by the user.
+ * @returns {Promise<void>}
+ */
+export const loadSearchResult = async function (query) {
+  try {
+    state.search.query = query;
+    const { data } = await AJAX(`${API}?search=${query}&key=${KEY}`);
+
+    state.search.results = data.recipes.map(rec => {
+      return {
+        id: rec.id,
+        title: rec.title,
+        publisher: rec.publisher,
+        image: rec.image_url,
+        ...(rec.key && { key: rec.key }),
+      };
+    });
+
+    state.search.page = 1;
+  } catch (err) {
+    throw err;
+  }
+};
+
+/**
+ * Returns the current page slice of search results and updates the active page in state.
+ * @param {number} [page=state.search.page] The page number to read.
+ * @returns {Object[]} Recipes for the requested page.
+ */
+export const getSearchResultsPage = function (page = state.search.page) {
+  state.search.page = page;
+
+  const start = (page - 1) * state.search.resultsPerPage;
+  const end = page * state.search.resultsPerPage;
+
+  return state.search.results.slice(start, end);
+};
+
+/**
+ * Recalculates ingredient quantities when the servings count changes.
+ * @param {number} newServings The desired number of servings.
+ * @returns {void}
+ */
+export const updateServing = function (newServings) {
+  state.recipe.ingredients.forEach(ing => {
+    ing.quantity = (ing.quantity * newServings) / state.recipe.servings;
+  });
+
+  state.recipe.servings = newServings;
+};
+
+/**
+ * Persists the current bookmarks array to local storage.
+ * @returns {void}
+ */
+const persistBookMarks = function () {
+  localStorage.setItem('bookmarks', JSON.stringify(state.bookmarks));
+};
+
+/**
+ * Adds a recipe to bookmarks and syncs bookmark state to storage.
+ * @param {Object} recipe The recipe to bookmark.
+ * @returns {void}
+ */
+export const addBookmark = function (recipe) {
+  state.bookmarks.push(recipe);
+
+  if (recipe.id === state.recipe.id) state.recipe.bookmarked = true;
+
+  persistBookMarks();
+};
+
+/**
+ * Removes a bookmarked recipe by id and syncs bookmark state to storage.
+ * @param {string} id The recipe id to remove.
+ * @returns {void}
+ */
+export const deleteBookmark = function (id) {
+  const index = state.bookmarks.findIndex(el => el.id === id);
+  state.bookmarks.splice(index, 1);
+
+  if (id === state.recipe.id) state.recipe.bookmarked = false;
+
+  persistBookMarks();
+};
+
+/**
+ * Hydrates bookmarks from local storage when the model module is loaded.
+ * @returns {void}
+ */
+const init = function () {
+  const storage = localStorage.getItem('bookmarks');
+
+  if (storage) state.bookmarks = JSON.parse(storage);
+};
+
+init();
+
+/**
+ * Parses form input into the API recipe format, uploads it, stores the created recipe,
+ * and bookmarks it automatically.
+ * @param {Object.<string, string>} newRecipe Raw form data from the add recipe form.
+ * @returns {Promise<void>}
+ */
+export const uploadRecipe = async function (newRecipe) {
+  try {
+    const ingredients = Object.entries(newRecipe)
+      .filter(entry => entry[0].startsWith('ingredient') && entry[1] !== '')
+      .map(ing => {
+        const ingArr = ing[1].split(',').map(el => el.trim());
+
+        if (ingArr.length !== 3)
+          throw new Error(
+            'Wrong ingredient format! Please use the correct format :)',
+          );
+
+        const [quantity, unit, description] = ingArr;
+
+        return { quantity: quantity ? +quantity : null, unit, description };
+      });
+
+    const recipe = {
+      title: newRecipe.title,
+      source_url: newRecipe.sourceUrl,
+      image_url: newRecipe.image,
+      publisher: newRecipe.publisher,
+      cooking_time: +newRecipe.cookingTime,
+      servings: +newRecipe.servings,
+      ingredients,
+    };
+    const { data } = await AJAX(`${API_URL}?key=${KEY}`, recipe);
+
+    state.recipe = createRecipeObject(data);
+    addBookmark(state.recipe);
+  } catch (err) {
+    throw err;
+  }
+};

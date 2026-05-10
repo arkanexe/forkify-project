@@ -1,0 +1,18 @@
+{
+  "name": "forkify",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "license": "ISC",
+  "author": "Ayanbisi AbdulRahman",
+  "type": "commonjs",
+  "scripts": {
+    "clean": "node scripts/clean-dist.js",
+    "start": "npm run clean && parcel index.html",
+    "build": "npm run clean && parcel build index.html --public-url ./ --no-source-maps && node scripts/fix-dist-icons.js"
+  },
+  "devDependencies": {
+    "@parcel/transformer-sass": "^2.16.4",
+    "parcel": "^2.16.4"
+  }
+}
