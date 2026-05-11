@@ -124,10 +124,6 @@ const controlAddRecipe = async function (newRecipe) {
   }
 };
 
-const newFeature = function () {
-  console.log('Welcome to the application');
-};
-
 /**
  * Registers all controller-to-view event subscriptions when the app starts.
  * @returns {void}
@@ -139,12 +135,8 @@ const init = function () {
   recipeView.addHandlerAddBookmark(controlAddBookmark);
 
   addRecipeView.addHandlerUpload(controlAddRecipe);
-
-  console.log('Welcome to Git AbdulRahman!!');
   searchView.addHandlerSearch(controlSearchResult);
   paginationView.addHandlerClick(controlPagination);
-
-  newFeature();
 };
 
 init();
