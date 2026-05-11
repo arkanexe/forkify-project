@@ -1,4 +1,4 @@
-import icons from 'url:../../img/icons.svg';
+import { iconHref } from '../icons.js';
 
 export default class View {
   /**
@@ -69,7 +69,7 @@ export default class View {
     const markup = `
           <div class="spinner">
             <svg>
-              <use href="${icons}#icon-loader"></use>
+              <use href="${iconHref('icon-loader')}"></use>
             </svg>
           </div>
         `;
@@ -87,7 +87,7 @@ export default class View {
               <div class="error">
                 <div>
                   <svg>
-                    <use href="${icons}#icon-alert-triangle"></use>
+                    <use href="${iconHref('icon-alert-triangle')}"></use>
                   </svg>
                 </div>
                 <p>${message}</p>
@@ -107,7 +107,7 @@ export default class View {
           <div class="message">
               <div>
                 <svg>
-                  <use href="${icons}#icon-smile"></use>
+                  <use href="${iconHref('icon-smile')}"></use>
                 </svg>
               </div>
               <p>${message}</p>

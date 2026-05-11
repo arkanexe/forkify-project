@@ -6,6 +6,7 @@ import recipeView from './views/recipeView.js';
 import resultsView from './views/resultsView.js';
 import searchView from './views/searchView.js';
 import { MODAL_CLOSE_SEC } from './config.js';
+import { mountIconsSprite } from './icons.js';
 
 /**
  * Loads and renders the recipe that matches the current hash id.
@@ -128,7 +129,9 @@ const controlAddRecipe = async function (newRecipe) {
  * Registers all controller-to-view event subscriptions when the app starts.
  * @returns {void}
  */
-const init = function () {
+const init = async function () {
+  await mountIconsSprite();
+
   bookmarkView.addHandlerRender(controlBookmarks);
   recipeView.addHandlerRender(controlRecipes);
   recipeView.addHandlerUpdateServings(controlServings);
