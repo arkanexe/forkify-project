@@ -7,8 +7,9 @@
   "author": "Ayanbisi AbdulRahman",
   "type": "commonjs",
   "scripts": {
-    "start": "parcel index.html",
-    "build": "parcel build index.html --public-url ./ --no-source-maps"
+    "clean": "node -e \"require('fs').rmSync('dist', { recursive: true, force: true })\"",
+    "start": "npm run clean && parcel index.html",
+    "build": "npm run clean && parcel build index.html --no-optimize --public-url ./ --no-source-maps"
   },
   "devDependencies": {
     "@parcel/transformer-sass": "^2.16.4",
