@@ -1,5 +1,5 @@
 import View from './View.js';
-import { iconHref } from '../icons.js';
+import icons from 'url:../../img/icons.svg';
 import { Fraction } from '../helpers/fractional.js';
 
 class RecipeView extends View {
@@ -61,14 +61,14 @@ class RecipeView extends View {
         <div class="recipe__details">
         <div class="recipe__info">
             <svg class="recipe__info-icon">
-            <use href="${iconHref('icon-clock')}"></use>
+            <use href="${icons}#icon-clock"></use>
             </svg>
             <span class="recipe__info-data recipe__info-data--minutes">${this._data.cookingTime}</span>
             <span class="recipe__info-text">minutes</span>
         </div>
         <div class="recipe__info">
             <svg class="recipe__info-icon">
-            <use href="${iconHref('icon-users')}"></use>
+            <use href="${icons}#icon-users"></use>
             </svg>
             <span class="recipe__info-data recipe__info-data--people">${this._data.servings}</span>
             <span class="recipe__info-text">servings</span>
@@ -76,12 +76,12 @@ class RecipeView extends View {
             <div class="recipe__info-buttons">
             <button class="btn--tiny btn--increase-servings" data-update-to = "${this._data.servings - 1}">
                 <svg>
-                <use href="${iconHref('icon-minus-circle')}"></use>
+                <use href="${icons}#icon-minus-circle"></use>
                 </svg>
             </button>
             <button class="btn--tiny btn--increase-servings" data-update-to = "${this._data.servings + 1}">
                 <svg>
-                <use href="${iconHref('icon-plus-circle')}"></use>
+                <use href="${icons}#icon-plus-circle"></use>
                 </svg>
             </button>
             </div>
@@ -89,12 +89,12 @@ class RecipeView extends View {
 
         <div class="recipe__user-generated ${this._data.key ? '' : 'hidden'}">
              <svg>
-            <use href="${iconHref('icon-user')}"></use>
+            <use href="${icons}#icon-user"></use>
             </svg>
         </div>
         <button class="btn--round btn--bookmark">
             <svg>
-            <use href="${iconHref(`icon-bookmark${this._data.bookmarked ? '-fill' : ''}`)}"></use>
+            <use href="${icons}#icon-bookmark${this._data.bookmarked ? '-fill' : ''}"></use>
             </svg>
         </button>
         </div>
@@ -123,7 +123,7 @@ class RecipeView extends View {
         >
             <span>Directions</span>
             <svg class="search__icon">
-            <use href="${iconHref('icon-arrow-right')}"></use>
+            <use href="${icons}#icon-arrow-right"></use>
             </svg>
         </a>
         </div>
@@ -139,7 +139,7 @@ class RecipeView extends View {
     return `
      <li class="recipe__ingredient">
          <svg class="recipe__icon">
-         <use href="${iconHref('icon-check')}"></use>
+         <use href="${icons}#icon-check"></use>
          </svg>
          <div class="recipe__quantity">${ing.quantity ? new Fraction(ing.quantity).toString() : ''}</div>
          <div class="recipe__description">
